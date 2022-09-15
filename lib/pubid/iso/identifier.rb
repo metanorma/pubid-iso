@@ -35,6 +35,9 @@ module Pubid::Iso
                    dir: nil, dirtype: nil, **opts)
       super(**opts.merge(number: number, publisher: publisher))
       @stage = stage if stage
+      if stage.abbr == "IS" && iteration
+        raise Errors::IsStageIterationError, "IS stage document cannot have iteration"
+      end
       @iteration = iteration.to_i if iteration
       @supplement = supplement if supplement
       @joint_document = joint_document if joint_document
