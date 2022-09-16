@@ -5,5 +5,7 @@ module Pubid::Iso
     class HarmonizedStageCodeInvalidError < StandardError; end
     class CodeInvalidError < StandardError; end
     class IsStageIterationError < StandardError; end
+    class WrongFormat < StandardError; end
+    class SupplementWithoutYearError < StandardError; end
   end
 end

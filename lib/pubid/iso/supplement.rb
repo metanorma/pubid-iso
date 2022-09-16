@@ -20,7 +20,7 @@ module Pubid::Iso
     end
 
     def render_pubid_stage
-      ((@stage && @stage.abbr) || "")
+      ((@stage && @stage.abbr != "IS" && @stage.abbr) || "")
     end
 
     def render_urn_stage
@@ -35,8 +35,8 @@ module Pubid::Iso
       @iteration && ".#{@iteration}"
     end
 
-    def render_pubid_number
-      if @year
+    def render_pubid_number(with_date: true)
+      if @year && with_date
         "#{@number}#{render_iteration}:#{@year}"
       else
         "#{@number}#{render_iteration}"

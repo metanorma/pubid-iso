@@ -32,8 +32,14 @@ module Pubid::Iso
                    joint_document: nil, urn_stage: nil,
                    tctype: nil, sctype: nil, wgtype: nil, tcnumber: nil,
                    scnumber: nil, wgnumber:nil,
-                   dir: nil, dirtype: nil, **opts)
-      super(**opts.merge(number: number, publisher: publisher))
+                   dir: nil, dirtype: nil, year: nil, amendments: nil,
+                   corrigendums: nil, **opts)
+      super(**opts.merge(number: number, publisher: publisher, year: year,
+                         amendments: amendments, corrigendums: corrigendums))
+
+      if (amendments || corrigendums) && year.nil?
+        raise Errors::SupplementWithoutYearError, "Cannot apply supplement to document without edition year"
+      end
       @stage = stage if stage
       if stage.abbr == "IS" && iteration
         raise Errors::IsStageIterationError, "IS stage document cannot have iteration"
@@ -87,14 +93,35 @@ module Pubid::Iso
       (@tctype && Renderer::UrnTc || @dir && Renderer::UrnDir || Pubid::Iso::Renderer::Urn).new(get_params).render
     end
 
+    def formatted(format)
+      case format
+      when :ref_num_short
+        to_s(with_language_code: :single, stage_format_long: false)
+      when :ref_num_long
+        to_s(with_language_code: :iso, stage_format_long: true)
+      when :ref_dated
+        to_s(with_language_code: :none, stage_format_long: false)
+      when :ref_dated_long
+        to_s(with_language_code: :none, stage_format_long: true)
+      when :ref_undated
+        to_s(with_language_code: :none, stage_format_long: false, with_date: false)
+      when :ref_undated_long
+        to_s(with_language_code: :none, stage_format_long: true, with_date: false)
+      else
+        raise Errors::WrongFormat, "#{format} is not available"
+      end
+    end
+
     # Renders pubid identifier
     #
     # @param lang [:french,:russian] use language specific renderer
     # @param with_date [Boolean] render identifier with date
     # @param with_language_code [:iso,:single] use iso format or single language code for rendering
     # @param with_edition [Boolean] render identifier with edition
+    # @param stage_format_long [Boolean] render with long or short stage format
     # @return [String] pubid identifier
-    def to_s(lang: nil, with_date: true, with_language_code: :iso, with_edition: true)
+    def to_s(lang: nil, with_date: true, with_language_code: :iso,
+             with_edition: true, stage_format_long: true)
       case lang
       when :french
         Renderer::French.new(get_params)
@@ -108,7 +135,8 @@ module Pubid::Iso
         else
           self.class.get_renderer_class.new(get_params)
         end
-      end.render(with_date: with_date, with_language_code: with_language_code, with_edition: with_edition) +
+      end.render(with_date: with_date, with_language_code: with_language_code, with_edition: with_edition,
+                 stage_format_long: stage_format_long) +
         if @joint_document && !@dir
           "|#{@joint_document}"
         end.to_s

@@ -54,5 +54,22 @@ module Pubid::Iso::Renderer
       ".#{iteration}"
     end
 
+    def render_amendments(amendments, opts, _params)
+      amendments.sort.map { |amendment| amendment.render_pubid(opts[:stage_format_long], opts[:with_date]) }.join("+")
+    end
+
+    def render_corrigendums(corrigendums, opts, _params)
+      corrigendums.sort.map { |corrigendum| corrigendum.render_pubid(opts[:stage_format_long], opts[:with_date]) }.join("+")
+    end
+
+    def render_language(language, opts, _params)
+      return if opts[:with_language_code] == :none
+      super
+    end
+
+    def render_year(year, opts, params)
+      return ":#{year}" if params[:amendments] || params[:corrigendums]
+      opts[:with_date] && ":#{year}" || ""
+    end
   end
 end

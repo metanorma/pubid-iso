@@ -239,7 +239,7 @@ module Pubid::Iso
 
     context "ISO/IEC 14496-30:2018/FDAmd 1" do
       let(:original) { "ISO/IEC 14496-30:2018/FDAmd 1" }
-      let(:pubid) { "ISO/IEC 14496-30:2018/FDIS Amd 1" }
+      let(:pubid) { "ISO/IEC 14496-30:2018/FDAmd 1" }
       let(:urn) { "urn:iso:std:iso-iec:14496:-30:stage-50.00:amd:1:v1" }
 
       it_behaves_like "converts pubid to urn"
@@ -300,7 +300,7 @@ module Pubid::Iso
 
     context "ISO 11137-2:2013/FDAmd 1" do
       let(:original) { "ISO 11137-2:2013/FDAmd 1" }
-      let(:pubid) { "ISO 11137-2:2013/FDIS Amd 1" }
+      let(:pubid) { "ISO 11137-2:2013/FDAmd 1" }
       let(:urn) { "urn:iso:std:iso:11137:-2:stage-50.00:amd:1:v1" }
 
       it_behaves_like "converts pubid to urn"
@@ -309,7 +309,7 @@ module Pubid::Iso
 
     context "ISO 15002:2008/DAM 2:2020(F)" do
       let(:original) { "ISO 15002:2008/DAM 2:2020(F)" }
-      let(:pubid) { "ISO 15002:2008/DIS Amd 2:2020(fr)" }
+      let(:pubid) { "ISO 15002:2008/DAmd 2:2020(fr)" }
       let(:urn) { "urn:iso:std:iso:15002:stage-40.00:amd:2020:v2:fr" }
 
       it_behaves_like "converts pubid to urn"
@@ -325,9 +325,9 @@ module Pubid::Iso
       it_behaves_like "converts pubid to pubid"
     end
 
-    context "ISO/IEC 14496-12/PDAM 4" do
-      let(:original) { "ISO/IEC 14496-12/PDAM 4" }
-      let(:pubid) { "ISO/IEC 14496-12/CD Amd 4" }
+    context "ISO/IEC 14496-12:2012/PDAM 4" do
+      let(:original) { "ISO/IEC 14496-12:2012/PDAM 4" }
+      let(:pubid) { "ISO/IEC 14496-12:2012/CD Amd 4" }
       let(:urn) { "urn:iso:std:iso-iec:14496:-12:stage-30.00:amd:4:v1" }
 
       it_behaves_like "converts pubid to urn"
@@ -388,7 +388,7 @@ module Pubid::Iso
     context "ISO/IEC 17025:2005/Cor.1:2006(fr)" do
       let(:original) { "ISO/IEC 17025:2005/Cor.1:2006 ED1(fr)" }
       let(:pubid) { "ISO/IEC 17025:2005 ED1/Cor 1:2006(fr)" }
-      let(:pubid_without_date) { "ISO/IEC 17025 ED1/Cor 1:2006(fr)" }
+      let(:pubid_without_date) { "ISO/IEC 17025:2005 ED1/Cor 1(fr)" }
       let(:pubid_single_letter_language) { "ISO/IEC 17025:2005 ED1/Cor 1:2006(F)" }
       let(:pubid_without_edition) { "ISO/IEC 17025:2005/Cor 1:2006(fr)" }
       let(:french_pubid) { "ISO/CEI 17025:2005 ED1/Cor.1:2006(fr)" }
@@ -495,9 +495,9 @@ module Pubid::Iso
       it_behaves_like "converts pubid to pubid"
     end
 
-    context "ISO 19110/Amd 1:2011" do
-      let(:original) { "ISO 19110/Amd 1:2011" }
-      let(:pubid) { "ISO 19110/Amd 1:2011" }
+    context "ISO 19110:2005/Amd 1:2011" do
+      let(:original) { "ISO 19110:2005/Amd 1:2011" }
+      let(:pubid) { "ISO 19110:2005/Amd 1:2011" }
       let(:urn) { "urn:iso:std:iso:19110:amd:2011:v1" }
 
       it_behaves_like "converts pubid to urn"
@@ -512,7 +512,7 @@ module Pubid::Iso
 
     context "ISO 17301-1:2016/FCOR 2.3" do
       let(:original) { "ISO 17301-1:2016/FCOR 2.3" }
-      let(:pubid) { "ISO 17301-1:2016/FDIS Cor 2.3" }
+      let(:pubid) { "ISO 17301-1:2016/FDCor 2.3" }
 
       it_behaves_like "converts pubid to pubid"
     end
@@ -525,6 +525,20 @@ module Pubid::Iso
 
     context "ISO/IEC/IEEE FDTR 17301-1-1:2016(en)" do
       let(:pubid) { "ISO/IEC/IEEE FDTR 17301-1-1:2016(en)" }
+
+      it_behaves_like "converts pubid to pubid"
+    end
+
+    context "ISO/IEC 14496-10:2014/FPDAM 1(en)" do
+      let(:original) { "ISO/IEC 14496-10:2014/FPDAM 1(en)" }
+      let(:pubid) { "ISO/IEC 14496-10:2014/DAmd 1(en)" }
+
+      it_behaves_like "converts pubid to pubid"
+    end
+
+    context "ISO/IEC 27006:2015/PDAM 1" do
+      let(:original) { "ISO/IEC 27006:2015/PDAM 1" }
+      let(:pubid) { "ISO/IEC 27006:2015/CD Amd 1" }
 
       it_behaves_like "converts pubid to pubid"
     end
@@ -766,11 +780,97 @@ module Pubid::Iso
         end
       end
 
-      context "when create document with amendment has a year" do
-        let(:params) { { amendments: [Pubid::Iso::Amendment.new(number: 1, year: 2017)] } }
+      context "when create document with amendment" do
+        let(:params) { { year: year, amendments: [Pubid::Iso::Amendment.new(number: 1, **amendment_params)] } }
+        let(:amendment_params) { { } }
+        let(:year) { 1999 }
 
-        it "renders document with amendment year" do
-          expect(subject.to_s).to eq("ISO 123/Amd 1:2017")
+        context "when document don't have year" do
+          let(:year) { nil }
+
+          it "raises an error" do
+            expect { subject }.to raise_exception(Errors::SupplementWithoutYearError)
+          end
+        end
+
+        context "when amendment has a year" do
+          let(:amendment_params) { { year: 2017 } }
+
+          it "renders document with amendment year" do
+            expect(subject.to_s).to eq("ISO 123:1999/Amd 1:2017")
+          end
+        end
+
+        context "when amendment without year" do
+          let(:amendment_params) { {} }
+
+          it "renders document with amendment year" do
+            expect(subject.to_s).to eq("ISO 123:1999/Amd 1")
+          end
+        end
+
+        context "when amendment with stage" do
+          let(:amendment_params) { { stage: stage } }
+          let(:stage) { Stage.new(abbr: :DIS) }
+
+          context "when IS stage" do
+            let(:stage) { Stage.new(abbr: "IS") }
+
+            it "should not render IS stage" do
+              expect(subject.to_s).to eq("ISO 123:1999/Amd 1")
+            end
+          end
+
+          context "when DIS stage" do
+            let(:stage) { Stage.new(abbr: :DIS) }
+
+            it "renders long stage and amendment" do
+              expect(subject.to_s).to eq("ISO #{number}:1999/DAmd 1")
+            end
+
+            it "renders short stage and amendment" do
+              expect(subject.to_s(stage_format_long: false)).to eq("ISO #{number}:1999/DAM 1")
+            end
+          end
+
+          context "when CD stage" do
+            let(:stage) { Stage.new(abbr: :CD) }
+
+            it "renders long stage and amendment" do
+              expect(subject.to_s(stage_format_long: true)).to eq("ISO #{number}:1999/CD Amd 1")
+            end
+
+            it "renders short stage and amendment" do
+              expect(subject.to_s(stage_format_long: false)).to eq("ISO #{number}:1999/CDAM 1")
+            end
+          end
+        end
+      end
+
+      context "when create document with corrigendum" do
+        let(:params) { { year: 1999, amendments: [Corrigendum.new(number: 1, **corrigendum_params)] } }
+
+        context "when corrigendum with stage" do
+          let(:corrigendum_params) { { stage: stage } }
+
+          context "with IS stage" do
+            let(:stage) { Stage.new(abbr: "IS") }
+
+            it "should not render IS stage" do
+              expect(subject.to_s).to eq("ISO 123:1999/Cor 1")
+            end
+          end
+
+          context "with DIS stage" do
+            let(:stage) { Stage.new(abbr: :DIS) }
+            it "renders long stage and corrigendum" do
+              expect(subject.to_s).to eq("ISO #{number}:1999/DCor 1")
+            end
+
+            it "renders short stage and corrigendum" do
+              expect(subject.to_s(stage_format_long: false)).to eq("ISO #{number}:1999/DCOR 1")
+            end
+          end
         end
       end
 
@@ -805,6 +905,51 @@ module Pubid::Iso
 
         it "render with another publisher" do
           expect(subject.to_s).to eq("IEC #{number}")
+        end
+      end
+
+      describe "predefined formats" do
+        subject do
+          described_class.new(number: number, year: 2019, language: "en",
+                              amendments: [Pubid::Iso::Amendment.new(number: 1, year: "2021",
+                                                                     stage: Stage.new(abbr: :DIS))]).formatted(format)
+        end
+        let(:number) { 123 }
+
+        context "when ref_num_short format" do
+          let(:format) { :ref_num_short }
+
+          it { expect(subject).to eq("ISO #{number}:2019/DAM 1:2021(E)") }
+        end
+
+        context "when ref_num_long format" do
+          let(:format) { :ref_num_long }
+
+          it { expect(subject.to_s).to eq("ISO #{number}:2019/DAmd 1:2021(en)") }
+        end
+
+        context "when ref_dated format" do
+          let(:format) { :ref_dated }
+
+          it { expect(subject.to_s).to eq("ISO #{number}:2019/DAM 1:2021") }
+        end
+
+        context "when ref_dated_long format" do
+          let(:format) { :ref_dated_long }
+
+          it { expect(subject.to_s).to eq("ISO #{number}:2019/DAmd 1:2021") }
+        end
+
+        context "when ref_undated format" do
+          let(:format) { :ref_undated }
+
+          it { expect(subject.to_s).to eq("ISO #{number}:2019/DAM 1") }
+        end
+
+        context "when ref_undated_long" do
+          let(:format) { :ref_undated_long }
+
+          it { expect(subject.to_s).to eq("ISO #{number}:2019/DAmd 1") }
         end
       end
     end
