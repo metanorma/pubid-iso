@@ -107,6 +107,8 @@ module Pubid::Iso
     end
 
     def self.convert_stage(code)
+      return code if code.is_a?(Pubid::Iso::Stage)
+
       russian_code = Renderer::Russian::STAGE.key(code.to_s)
       # return russian_code.to_s if russian_code
 
