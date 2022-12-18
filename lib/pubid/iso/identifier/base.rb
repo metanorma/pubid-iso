@@ -134,6 +134,8 @@ module Pubid::Iso
           # delete parts from the title until it's parseable
           acc.reverse.sub(part.reverse, "").reverse.strip
         end
+
+        raise Errors::ParseError, "cannot parse #{title}"
       end
 
       class << self
